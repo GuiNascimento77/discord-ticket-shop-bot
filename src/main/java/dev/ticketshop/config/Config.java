@@ -29,14 +29,18 @@ public record Config(String token,
 
     public static Config carregar(Path arquivoEnv) {
         Map<String, String> valores = Env.carregar(arquivoEnv);
+
+        // Lemos o caminho do banco uma vez so. Antes, o getOrDefault ficava na condicao
+        // e o get no ramo do operador ternario: quando o .env nao tinha DB_PATH, o
+        // primeiro devolvia o padrao (condicao falsa) e o segundo devolvia null -> NPE.
+        String caminhoBanco = valores.getOrDefault("DB_PATH", "").trim();
+
         return new Config(
                 exigirToken(valores),
                 opcional(valores, "GUILD_ID"),
                 opcional(valores, "STAFF_ROLE_ID"),
                 opcional(valores, "CATEGORIA_ID"),
-                valores.getOrDefault("DB_PATH", BANCO_PADRAO).trim().isEmpty()
-                        ? BANCO_PADRAO
-                        : valores.get("DB_PATH").trim());
+                caminhoBanco.isEmpty() ? BANCO_PADRAO : caminhoBanco);
     }
 
     private static String exigirToken(Map<String, String> valores) {

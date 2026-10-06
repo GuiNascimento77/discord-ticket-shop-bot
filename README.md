@@ -297,9 +297,14 @@ Durante o desenvolvimento, sempre preencha o `GUILD_ID`.
 
 ## 🆔 Passo 4 — Pegar os IDs do servidor
 
-1. No Discord, clique na engrenagem ⚙️ ao lado do seu nome → **Avançado** → ligue o
-   **Modo de desenvolvedor**.
-2. Agora clique com o **botão direito** e escolha **Copiar ID**:
+### 4.1 Ligar o Modo de desenvolvedor
+
+1. No Discord (app de desktop ou navegador — no celular não tem essa opção), clique na
+   **engrenagem ⚙️** no canto inferior esquerdo, ao lado do seu nome.
+2. Role até **Avançado** → ligue o **Modo de desenvolvedor**.
+3. Feche as configurações.
+
+Agora **clique com o botão direito** em qualquer coisa e vai aparecer **Copiar ID**:
 
 | O que copiar | Onde clicar com o botão direito |
 |---|---|
@@ -307,8 +312,31 @@ Durante o desenvolvimento, sempre preencha o `GUILD_ID`.
 | `STAFF_ROLE_ID` | em **Configurações do servidor → Cargos →** no cargo da equipe |
 | `CATEGORIA_ID` | na **categoria** onde os tickets devem nascer |
 
+### 4.2 Não achou o Modo de desenvolvedor? Use a URL
+
+Dá para pegar o `GUILD_ID` sem ligar nada, pelo Discord no navegador:
+
+1. Abra <https://discord.com/app> e entre no seu servidor.
+2. Olhe a barra de endereços:
+
+```
+https://discord.com/channels/123456789012345678/987654321098765432
+                            └──── este é o GUILD_ID ────┘
+```
+
+O **primeiro** número é o ID do servidor. O segundo é o do canal onde você está.
+
+O mesmo vale para o `CATEGORIA_ID`: clique em um canal que esteja dentro da categoria, e o
+segundo número da URL é o ID do canal — não da categoria. Para a categoria, o caminho fácil
+continua sendo o botão direito.
+
 > Dica: crie antes uma categoria chamada **Atendimentos** e um cargo **Equipe**. Assim você já
 > tem os dois IDs na mão.
+
+### 4.3 Não esqueça de convidar o bot
+
+Os IDs não servem de nada se o bot não estiver **dentro** do servidor. Se ele ainda não aparece
+na lista de membros, volte ao [passo 2.5](#25-convidar-o-bot-para-o-seu-servidor).
 
 ---
 
@@ -537,7 +565,7 @@ mvn test
 ```
 
 ```
-Tests run: 30, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 39, Failures: 0, Errors: 0, Skipped: 0
 ```
 
 | Arquivo | Testes | Cobre |
@@ -546,10 +574,17 @@ Tests run: 30, Failures: 0, Errors: 0, Skipped: 0
 | `CarrinhoServiceTest` | 7 | soma de quantidade do mesmo item, limite de 99, esvaziar, total |
 | `TicketServiceTest` | 10 | abrir, converter dúvida em pedido, confirmar/cancelar, transições inválidas, resumo |
 | `MoedaTest` | 7 | formatação pt-BR, leitura de `49,90`/`49.90`/`R$ 1.234,56`, arredondamento, erros |
+| `ConfigTest` | 9 | leitura do `.env`, caminho padrão do banco, opcionais vazios, token faltando |
 
 Os testes usam **SQLite em memória** (`jdbc:sqlite::memory:`), então rodam em menos de um segundo
 e não sujam o seu disco. Também servem de documentação: se você quer entender a regra de negócio,
 leia os testes antes do código.
+
+> O `ConfigTest` nasceu de um bug de verdade: na primeira vez que o bot foi ligado com um `.env`
+> contendo só o token, ele caiu com `NullPointerException` antes de conectar. O caminho do banco
+> era lido com `getOrDefault` na condição e `get` no ramo do ternário — o primeiro achava o valor
+> padrão, o segundo devolvia `null`. Está em `Config.carregar`. É o tipo de erro que só aparece
+> quando você **roda** o programa, não quando você lê o código.
 
 O projeto tem **integração contínua** configurada em `.github/workflows/ci.yml`: a cada `push` ou
 *pull request*, o GitHub instala o Java 21, roda `mvn verify` e executa a demonstração offline.
