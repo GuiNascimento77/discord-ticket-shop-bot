@@ -1,0 +1,23 @@
+# Segredos: NUNCA suba o .env para o GitHub.
+.env
+
+# Banco de dados local
+dados/
+*.db
+*.db-shm
+*.db-wal
+
+# Build do Maven
+target/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

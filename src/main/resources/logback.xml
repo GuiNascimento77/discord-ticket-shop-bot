@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configuracao de log. Sem isso o SLF4J fica reclamando no console. -->
+<configuration>
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss} %-5level %logger{20} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- O JDA e barulhento em nivel DEBUG/INFO; deixe WARN para um console limpo. -->
+  <logger name="net.dv8tion.jda" level="WARN"/>
+  <logger name="dev.ticketshop" level="INFO"/>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+</configuration>
