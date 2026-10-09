@@ -223,6 +223,18 @@ Essa parte é toda pelo site. Leva uns 5 minutos.
 > print, em mensagem, em vídeo ou no GitHub. O `.gitignore` deste projeto já bloqueia o `.env`.
 > Se vazar, clique em *Reset Token* de novo — o antigo para de funcionar na hora.
 
+**Ainda na aba Bot, logo abaixo da caixa do Token**, existe uma seção com dois botões (a seção
+se chama *Authorization Flow*; no portal em português ela aparece com o nome traduzido). Confira:
+
+| Botão | Como deve ficar |
+|---|---|
+| **Bot público** (*Public Bot*) | ✅ **ligado** |
+| **Solicite a concessão do código OAuth2** (*Requires OAuth2 Code Grant*) | ❌ **DESLIGADO** |
+
+Esse segundo botão é uma armadilha: com ele ligado, o Discord **aceita** o convite, mostra a
+mensagem **"Tudo pronto!"** — e **não coloca o bot no servidor**. Se o seu bot não aparecer na
+lista de membros depois de autorizar, é quase sempre isso. Desligue, salve e convide de novo.
+
 ### 2.3 Intents (o que o bot pode "ouvir")
 
 **Este bot não precisa de nenhum intent privilegiado.** Ele vive de *slash commands*, botões,
@@ -668,6 +680,8 @@ sudo chmod 600 /opt/ticket-shop/.env
 
 | Sintoma | Causa e solução |
 |---|---|
+| **O convite mostra "Tudo pronto!", mas o bot não aparece no servidor** | A opção **"Solicite a concessão do código OAuth2"** (*Requires OAuth2 Code Grant*) está ligada na aba **Bot** → seção logo abaixo do Token. **Desligue** e convide de novo. Com ela ligada, o Discord aceita a autorização, mostra "Tudo pronto" e **não coloca o bot no servidor** — é a pegadinha mais cruel do Developer Portal. |
+| A lista de servidores no convite diz "Nenhum item para mostrar" | Sua conta não é dona nem tem "Gerenciar Servidor" em nenhum servidor. Crie um servidor seu (no app: **+** → *Criar um servidor*) e ele aparece na lista. |
 | `DISCORD_TOKEN nao configurado.` | falta o `.env` (ou o token está com o texto de exemplo). Rode `cp .env.example .env` e cole o token. |
 | Os comandos `/` não aparecem | faltou o escopo `applications.commands` no convite, **ou** você não preencheu o `GUILD_ID`. Sem ele, comandos globais podem levar até 1 hora. |
 | `Missing Permissions` ao abrir ticket | o bot precisa de **Gerenciar Canais**. Reconvide-o com a URL do passo 2.5. |
