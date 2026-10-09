@@ -611,16 +611,41 @@ Se o bot roda no seu computador, ele cai quando você desliga o PC. Para ficar o
 escolha uma das opções:
 
 <details>
-<summary><b>Railway / Render (mais fácil, plano gratuito)</b></summary>
+<summary><b>Railway (o mais fácil — teste grátis e depois a partir de US$ 1/mês)</b></summary>
 
-1. Suba o projeto para o GitHub.
-2. No painel da plataforma, crie um novo serviço apontando para o repositório.
-3. Configure o build como `mvn -B package -DskipTests` e o start como
+O Railway dá 30 dias de teste com US$ 5 de crédito. Passado o teste, um serviço pequeno como este
+cabe no plano de **US$ 1/mês**; o plano Hobby custa US$ 5/mês.
+
+1. Suba o projeto para o GitHub (passo anterior).
+2. Em [railway.com](https://railway.com), entre com a conta do GitHub e crie um
+   **New Project → Deploy from GitHub repo**, escolhendo este repositório.
+3. Em **Settings → Build**, use `mvn -B package -DskipTests`. Em **Deploy**,
    `java -jar target/discord-ticket-shop-bot.jar`.
-4. Em **Variáveis de ambiente**, cadastre `DISCORD_TOKEN`, `GUILD_ID`, `STAFF_ROLE_ID` e
-   `CATEGORIA_ID`. **Não** suba o `.env` — o bot lê as variáveis do sistema.
-5. Atenção ao **disco**: em planos gratuitos o sistema de arquivos é apagado a cada deploy, o que
-   apaga o `dados/bot.db`. Monte um **volume persistente** e aponte `DB_PATH` para dentro dele.
+4. Em **Variables**, cadastre `DISCORD_TOKEN`, `GUILD_ID`, `CATEGORIA_ID` e `DB_PATH=/dados/bot.db`.
+   **Não** suba o `.env` — o bot lê as variáveis do sistema.
+5. Em **Volumes**, monte um volume em `/dados`. Sem isso cada deploy apaga o `bot.db` e você
+   perde os pedidos.
+
+</details>
+
+<details>
+<summary><b>Render (funciona, mas precisa do plano pago)</b></summary>
+
+Pegadinha: o plano gratuito do Render vale para **web services**, que hibernam quando ficam sem
+acesso. Bot de Discord não recebe acesso HTTP — ele fica conectado ao gateway do Discord. O tipo
+certo é **Background Worker**, que **começa em US$ 7/mês**.
+
+1. New → **Background Worker**, apontando para o repositório.
+2. Build: `mvn -B package -DskipTests` · Start: `java -jar target/discord-ticket-shop-bot.jar`.
+3. Variáveis de ambiente iguais às do Railway. Disco persistente só nos planos pagos.
+
+</details>
+
+<details>
+<summary><b>Oracle Cloud "Always Free" (grátis para sempre, mas exige mexer em Linux)</b></summary>
+
+É a única opção realmente gratuita e sem hibernar: uma VM pequena que nunca é desligada. Em troca,
+você administra o servidor por SSH — o roteiro de VPS abaixo funciona nela.
 
 </details>
 
