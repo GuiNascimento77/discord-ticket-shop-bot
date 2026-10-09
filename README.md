@@ -1,5 +1,7 @@
 # 🤖 Bot de Vendas e Tickets para Discord
 
+[![CI](https://github.com/GuiNascimento77/discord-ticket-shop-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/GuiNascimento77/discord-ticket-shop-bot/actions/workflows/ci.yml)
+
 ![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-3.9+-blue?logo=apachemaven&logoColor=white)
 ![JDA](https://img.shields.io/badge/JDA-6.7.0-5865F2?logo=discord&logoColor=white)
@@ -690,9 +692,22 @@ sudo chmod 600 /opt/ticket-shop/.env
 | O bot cai quando fecho o terminal | é assim mesmo: processo em primeiro plano. Veja [Hospedagem](#-hospedagem-deixar-o-bot-24h-online) ou rode dentro de um `tmux`. |
 | Perdi os pedidos depois de reiniciar | confira o `DB_PATH`. Em hospedagens com disco volátil, o banco precisa de um volume persistente. |
 | `Bot conectado`, mas ninguém vê o canal | o bot precisa de **Gerenciar Canais** e a categoria configurada precisa permitir a criação. |
+| O canal do ticket é criado, mas o resumo do pedido não aparece nele | `MissingAccessException: Missing permission: VIEW_CHANNEL` no log. O canal nasce negando `VIEW_CHANNEL` para `@everyone`, e o **próprio bot também é `@everyone`** — sem uma permissão só para ele, o bot cria o canal e não consegue mais enxergá-lo. `TicketCanal.criar` já resolve isso com um override para `guild.getSelfMember()`. |
 
 Para ver mais detalhes do que está acontecendo, aumente o nível do log em
 `src/main/resources/logback.xml` (troque `INFO` por `DEBUG`).
+
+### Dois bugs que só apareceram rodando de verdade
+
+Vale registrar, porque os dois passam batido em revisão de código:
+
+1. **O espaço invisível do `R$`** — `NumberFormat` no locale `pt-BR` separa `R$` do número com
+   um *espaço inquebrável* (U+00A0), não com um espaço comum. O texto saía certo no editor e
+   errado no Discord. Corrigido em `Moeda.java`, com testes que travam o comportamento.
+2. **O bot que se tranca fora do próprio canal** — ao criar o canal do ticket, negar
+   `VIEW_CHANNEL` para `@everyone` derruba junto o acesso do bot, que também é membro do
+   servidor. O canal era criado com sucesso e a mensagem seguinte falhava. A correção é uma
+   linha em `TicketCanal.criar`: um override de membro para o próprio bot.
 
 ---
 

@@ -61,7 +61,11 @@ public final class TicketCanal {
                 .setTopic("Atendimento #" + ticket.id() + " - " + dono.getUser().getName())
                 // deny = negar; allow = permitir. null significa "nao mexer nessa permissao".
                 .addPermissionOverride(guild.getPublicRole(), null, List.of(Permission.VIEW_CHANNEL))
-                .addMemberPermissionOverride(dono.getIdLong(), PERMISSOES_DO_CLIENTE, null);
+                .addMemberPermissionOverride(dono.getIdLong(), PERMISSOES_DO_CLIENTE, null)
+                // O bot tambem e membro do servidor: negar VIEW_CHANNEL para @everyone tira
+                // o acesso dele junto. Sem esta linha o canal e criado e o bot nao consegue
+                // mais enxerga-lo (MissingAccessException ao mandar a primeira mensagem).
+                .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), PERMISSOES_DA_EQUIPE, null);
 
         config.staffRoleId().ifPresent(idDoCargo -> {
             Role cargo = guild.getRoleById(idDoCargo);
